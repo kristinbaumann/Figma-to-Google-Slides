@@ -1,17 +1,16 @@
 {
   "name": "figma-to-google-node",
   "version": "1.0.0",
-  "description": "![Demo](https://media.giphy.com/media/1zKgvNDdxfElnYOL1p/giphy.gif) <br> Convert [Figma](https://figma.com) frames into a Google Slides presentation, as showcased [here](https://twitter.com/alyssaxuu/status/1086934646959558656) 📽️",
+  "description": "Convert [Figma](https://figma.com) frames into a Google Slides presentation. With NodeJS",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kristinbaumann/Figma-to-Google-Slides.git"
   },
-  "author": "",
+  "author": "Kristin Baumann",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/kristinbaumann/Figma-to-Google-Slides/issues"
