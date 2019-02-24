@@ -1,20 +1,25 @@
-# Figma to Google Slides
-![Demo](https://media.giphy.com/media/1zKgvNDdxfElnYOL1p/giphy.gif)
-<br>
-Convert [Figma](https://figma.com) frames into a Google Slides presentation, as showcased [here](https://twitter.com/alyssaxuu/status/1086934646959558656) 📽️
+# Figma to Google Slides (with Node.js)
 
-The order of the slides is determined by the frame hierarchy in Figma, from bottom to top. That means that the first slide is the one placed on the bottom of the "Layers" panel, and the last one is the one on the top.
+**Convert <a href="https://figma.com">Figma</a> frames into a Google Slides presentation**
 
-Made by 18 y/o 👩 [Alyssa](https://alyssax.com)
+Forked from https://github.com/alyssaxuu/Figma-to-Google-Slides and adapted to use Node.js instead of PHP.
 
+# Setup
 
-# Installation
+1. Clone the repository.
+2. Install the Node Modules with `npm install` or `yarn install`.
+3. Duplicate the `.env.example` file and name it `.env`. This file will store the necessary credentials.
+4. Figma Setup
+   - Get your personal Figma Access Token (Go to the [API documentation](https://www.figma.com/developers/docs), scroll down to the "Access Tokens" section, and click on "Get personal access token".) and paste it in the `.env` file for `FIGMA_PERSONAL_ACCESS_TOKEN`.
+   - Create a new Figma project and copy the file id from the URL in the `.env` file for `FIGMA_FILE_ID`.
+5. Google API Setup
+   - Create a service API key in the [Google API Console](https://console.cloud.google.com/apis/), download the JSON key file and place it in the `/config` folder with the name `google-service-account.json`.
+   - Create a new Google Slides project and share it with your previously generated service account email address (with edit permissions).
+   - Copy the presentation id from the URL in the `.env` file for `GOOGLE_PRESENTATION_ID`.
+6. Add two example frames (e.g. with the dimensions 960x540px) to your Figma project with background colors and some text.
+7. Run the script with `npm start` and see how the slides update in your Google presentation.
 
- 1. Import the [Google API PHP Library](https://github.com/googleapis/google-api-php-client)! ✨ If you import it without composer, make sure that the path on the first line matches where the library is hosted in your server. Otherwise, you can replace that line from the code.
- 2. Create a service API key in the [Google API Console](https://console.cloud.google.com/apis/). You can follow the same steps described in the second section [of my guide on using the Google Sheets API](https://medium.com/hackerpreneur-magazine/how-to-use-google-sheets-as-a-cms-or-a-database-f9d8e736fdce) 📖 . Import it to your server and replace the path in the code.
- 3. Go to your Google Slides presentation, click on "Share" and enter the previously generated email address (your service API email address) into the "People" field with edit permissions 🔑
- 4. Replace the Google Slides presentation ID and Figma file ID from the code 🔗
- 5. Find your personal Figma access token by going to the [API documentation](https://www.figma.com/developers/docs) 🤖, scrolling down to the "Access Tokens" section, and clicking on "Get personal access token" on the right. Replace it in the code.
- 6. Run the script & enjoy! Every time you run the script you will update the slides with the different frames from Figma 🍭
-#
- Feel free to reach out to me through email at hi@alyssax.com or [on Twitter](https://twitter.com/alyssaxuu) if you have any questions or feedback! Hope you find this useful 💜
+# Hints
+
+- The order of the slides is determined by the frame hierarchy in Figma, from bottom to top. That means that the first slide is the one placed on the bottom of the "Layers" panel, and the last one is the one on the top.
+- Figma Frame Dimensions: 960x540px for Widescreen (16:9) or 960x720px for Standard (4:3) presentations
