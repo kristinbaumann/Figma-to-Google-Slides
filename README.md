@@ -2,6 +2,8 @@
 
 **Convert <a href="https://figma.com">Figma</a> frames into a Google Slides presentation**
 
+![showcase of figma to google slides conversion](https://github.com/kristinbaumann/figma-to-google-slides/blob/master/showcase.png)
+
 Forked from https://github.com/alyssaxuu/Figma-to-Google-Slides and adapted to use Node.js instead of PHP.
 
 # Setup
