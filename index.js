@@ -1,23 +1,23 @@
 const axios = require("axios");
 const { google } = require("googleapis");
-
-FIGMA_PERSONAL_ACCESS_TOKEN = "8543-648ac531-7da7-4c0b-b484-e8b0c4617092";
-FIGMA_FILE_ID = "WaVrWlWpSAZrTJiA0GMZCfNQ";
-
-GOOGLE_PRESENTATION_ID = "1sImag8qfZErDDt8JnUdAJEz_xOe9T5lVD6MZwYbRdqs";
-const googleServiceAccount = require("./Figma-To-Slides-00e2cb247f6d.json");
+require("dotenv").config();
+const googleServiceAccount = require("./google-service-account.json");
 
 /**
  *  Figma
  */
 
 figmaApiConfig = {
-  headers: { "X-Figma-Token": FIGMA_PERSONAL_ACCESS_TOKEN }
+  headers: { "X-Figma-Token": process.env.FIGMA_PERSONAL_ACCESS_TOKEN }
 };
 
+console.log(process.env.FIGMA_FILE_ID);
 function getFigmaNodes() {
   return axios
-    .get(`https://api.figma.com/v1/files/${FIGMA_FILE_ID}`, figmaApiConfig)
+    .get(
+      `https://api.figma.com/v1/files/${process.env.FIGMA_FILE_ID}`,
+      figmaApiConfig
+    )
     .then(response => {
       const nodes = response.data.document.children[0].children;
       return nodes.map(node => node.id);
@@ -30,7 +30,9 @@ function getFigmaNodes() {
 function getFigmaImage(nodeId) {
   return axios
     .get(
-      `https://api.figma.com/v1/images/${FIGMA_FILE_ID}?ids=${nodeId}`,
+      `https://api.figma.com/v1/images/${
+        process.env.FIGMA_FILE_ID
+      }?ids=${nodeId}`,
       figmaApiConfig
     )
     .then(response => response.data.images[nodeId])
@@ -67,7 +69,7 @@ function deleteExistingPresentationSlides(jwtClient) {
   google.slides("v1").presentations.get(
     {
       auth: jwtClient,
-      presentationId: GOOGLE_PRESENTATION_ID,
+      presentationId: process.env.GOOGLE_PRESENTATION_ID,
       fields: "slides"
     },
     (err, response) => {
@@ -83,7 +85,7 @@ function deleteExistingPresentationSlides(jwtClient) {
       google.slides("v1").presentations.batchUpdate(
         {
           auth: jwtClient,
-          presentationId: GOOGLE_PRESENTATION_ID,
+          presentationId: process.env.GOOGLE_PRESENTATION_ID,
           resource: {
             requests: slides.map(({ objectId }) => ({
               deleteObject: {
@@ -144,7 +146,7 @@ function createSlidesWithFigmaImage(jwtClient, imageUrls) {
   google.slides("v1").presentations.batchUpdate(
     {
       auth: jwtClient,
-      presentationId: GOOGLE_PRESENTATION_ID,
+      presentationId: process.env.GOOGLE_PRESENTATION_ID,
       resource: {
         requests
       }
