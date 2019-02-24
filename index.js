@@ -1,26 +1,22 @@
 const axios = require("axios");
 require("dotenv").config();
 
-const { getFigmaNodes, getFigmaImage } = require("./figma.js");
-const {
-  authenticateGoogleApi,
-  deleteExistingPresentationSlides,
-  createSlidesWithFigmaImage
-} = require("./google-slides.js");
+const figma = require("./src/figma.js");
+const googleSlides = require("./src/google-slides.js");
 
 console.log("Pulling images from Figma...");
-getFigmaNodes().then(nodeIds => {
-  const figmaImageCalls = nodeIds.map(nodeId => getFigmaImage(nodeId));
-  axios.all(figmaImageCalls).then(imageUrls => {
-    console.log(`${imageUrls.length} images pulled from Figma.\n`);
+figma.getNodes().then(nodeIds => {
+  const figmaImageRequests = nodeIds.map(nodeId => figma.getImage(nodeId));
+  axios.all(figmaImageRequests).then(figmaImageUrls => {
+    console.log(`${figmaImageUrls.length} images pulled from Figma.\n`);
 
     console.log("Authenticating with Google API...");
-    const jwtClient = authenticateGoogleApi();
+    const jwtClient = googleSlides.authenticate();
 
     console.log("Deleting existing slides...");
-    deleteExistingPresentationSlides(jwtClient);
+    googleSlides.deleteExistingSlides(jwtClient);
 
     console.log("Creating new slides...");
-    createSlidesWithFigmaImage(jwtClient, imageUrls);
+    googleSlides.createSlidesFromImages(jwtClient, figmaImageUrls);
   });
 });

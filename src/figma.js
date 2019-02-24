@@ -8,7 +8,7 @@ figmaApiConfig = {
   headers: { "X-Figma-Token": process.env.FIGMA_PERSONAL_ACCESS_TOKEN }
 };
 
-function getFigmaNodes() {
+function getNodes() {
   return axios
     .get(
       `https://api.figma.com/v1/files/${process.env.FIGMA_FILE_ID}`,
@@ -23,7 +23,7 @@ function getFigmaNodes() {
     });
 }
 
-function getFigmaImage(nodeId) {
+function getImage(nodeId) {
   return axios
     .get(
       `https://api.figma.com/v1/images/${
@@ -38,6 +38,6 @@ function getFigmaImage(nodeId) {
 }
 
 module.exports = {
-  getFigmaNodes,
-  getFigmaImage
+  getNodes,
+  getImage
 };

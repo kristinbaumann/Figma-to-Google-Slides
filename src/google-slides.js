@@ -1,12 +1,12 @@
 /**
  *  Google Slides
  */
-const googleServiceAccount = require("./google-service-account.json");
+const googleServiceAccount = require("../config/google-service-account.json");
 const { google } = require("googleapis");
 
 const slideService = google.slides("v1");
 
-function authenticateGoogleApi() {
+function authenticate() {
   // configure a JWT auth client
   const jwtClient = new google.auth.JWT(
     googleServiceAccount.client_email,
@@ -26,7 +26,7 @@ function authenticateGoogleApi() {
   return jwtClient;
 }
 
-function deleteExistingPresentationSlides(jwtClient) {
+function deleteExistingSlides(jwtClient) {
   slideService.presentations.get(
     {
       auth: jwtClient,
@@ -66,13 +66,14 @@ function deleteExistingPresentationSlides(jwtClient) {
     }
   );
 }
+
 function getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-function createSlidesWithFigmaImage(jwtClient, imageUrls) {
+function createSlidesFromImages(jwtClient, imageUrls) {
   const requests = [];
 
   let objectId = getRandomInt(10000, 500000);
@@ -123,7 +124,7 @@ function createSlidesWithFigmaImage(jwtClient, imageUrls) {
 }
 
 module.exports = {
-  authenticateGoogleApi,
-  deleteExistingPresentationSlides,
-  createSlidesWithFigmaImage
+  authenticate,
+  deleteExistingSlides,
+  createSlidesFromImages
 };
