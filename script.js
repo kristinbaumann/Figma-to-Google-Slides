@@ -8,7 +8,7 @@ GOOGLE_PRESENTATION_ID = "1sImag8qfZErDDt8JnUdAJEz_xOe9T5lVD6MZwYbRdqs";
 const googleServiceAccount = require("./Figma-To-Slides-00e2cb247f6d.json");
 
 /**
- *  Figma Setup and Functions
+ *  Figma
  */
 
 figmaApiConfig = {
@@ -33,9 +33,7 @@ function getFigmaImage(nodeId) {
       `https://api.figma.com/v1/images/${FIGMA_FILE_ID}?ids=${nodeId}`,
       figmaApiConfig
     )
-    .then(response => {
-      return response.data.images[nodeId];
-    })
+    .then(response => response.data.images[nodeId])
     .catch(error => {
       console.log(error);
     });
@@ -53,11 +51,11 @@ function authenticateGoogleApi() {
     googleServiceAccount.private_key,
     ["https://www.googleapis.com/auth/presentations"]
   );
+
   //authenticate request
   jwtClient.authorize((err, tokens) => {
     if (err) {
       console.log(err);
-      return;
     } else {
       console.log("Successfully connected to Google API.");
     }
@@ -65,8 +63,8 @@ function authenticateGoogleApi() {
   return jwtClient;
 }
 
-function deleteExistingPresentationSlides() {
-  slideService.presentations.get(
+function deleteExistingPresentationSlides(jwtClient) {
+  google.slides("v1").presentations.get(
     {
       auth: jwtClient,
       presentationId: GOOGLE_PRESENTATION_ID,
@@ -78,16 +76,43 @@ function deleteExistingPresentationSlides() {
         return;
       }
       const slides = response.data.slides;
-      console.log("Anzahl an Slides", slides.length);
-      // TODO: perform delete action
+      if (slides.length <= 0) {
+        console.log("No slides to delete");
+        return;
+      }
+      google.slides("v1").presentations.batchUpdate(
+        {
+          auth: jwtClient,
+          presentationId: GOOGLE_PRESENTATION_ID,
+          resource: {
+            requests: slides.map(({ objectId }) => ({
+              deleteObject: {
+                objectId
+              }
+            }))
+          }
+        },
+        (err, presentation) => {
+          if (err) {
+            console.log("The API returned an error: " + err);
+            return;
+          }
+          console.log(`Successfully deleted all slides.`);
+        }
+      );
     }
   );
+}
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min)) + min;
 }
 
 function createSlidesWithFigmaImage(jwtClient, imageUrls) {
   const requests = [];
 
-  let objectId = 123456;
+  let objectId = getRandomInt(10000, 500000);
   imageUrls.forEach(imageUrl => {
     const createSlide = {
       createSlide: {
@@ -97,6 +122,7 @@ function createSlidesWithFigmaImage(jwtClient, imageUrls) {
         }
       }
     };
+    requests.push(createSlide);
     const addImage = {
       updatePageProperties: {
         objectId: String(objectId),
@@ -110,7 +136,6 @@ function createSlidesWithFigmaImage(jwtClient, imageUrls) {
         fields: "pageBackgroundFill"
       }
     };
-    requests.push(createSlide);
     requests.push(addImage);
 
     objectId++;
@@ -129,7 +154,7 @@ function createSlidesWithFigmaImage(jwtClient, imageUrls) {
         console.log("The API returned an error: " + err);
         return;
       }
-      console.log("Successfully performed batch update to Google API.");
+      console.log(`Successfully created ${imageUrls.length} slides.`);
     }
   );
 }
@@ -144,9 +169,13 @@ getFigmaNodes().then(nodeIds => {
   axios.all(figmaImageCalls).then(imageUrls => {
     console.log(`${imageUrls.length} images pulled from Figma.\n`);
 
-    console.log("Creating slides in Google Slides...");
+    console.log("Authenticating with Google API...");
     const jwtClient = authenticateGoogleApi();
-    // deleteExistingPresentationSlides();
+
+    console.log("Deleting existing slides...");
+    deleteExistingPresentationSlides(jwtClient);
+
+    console.log("Creating new slides...");
     createSlidesWithFigmaImage(jwtClient, imageUrls);
   });
 });
